@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆界面</title>
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js" ></script>
+</head>
+<body>
+  <center><h1>汽车租赁系统后台</h1></center>
+  <center> 用户名：  <input type="text" id="username" size="20" maxlength="10"></center>
+  <center> 密  码：  <input type="password"  id="password" size="20" maxlength="10"></center>
+   <center></button> <button onclick="login()">登陆</button></center>
+  <p></p>
+  <a href="/index">首页</a>
+
+<!--  //HTML的部分-->
+<!--  <input type="hidden" value="${student.name}" id="stuName"/>-->
+
+  <script>
+
+
+  login = function () {
+      let username = document.getElementById("username").value;
+      let password = document.getElementById("password").value;
+      let data = {
+          "username" : username,
+          "password" : password
+      }
+      let xhr = new XMLHttpRequest();
+      xhr.open("POST","/back" +
+          "/login",true);
+      xhr.setRequestHeader('content-type', 'application/json');
+      xhr.send(JSON.stringify(data));
+
+      //回调
+      xhr.onreadystatechange = function() {
+          if (xhr.readyState == 4) {
+              //根据服务器的响应内容格式处理响应结果
+              if(xhr.getResponseHeader('content-type')==='application/json'){
+                  var result = JSON.parse(xhr.responseText);
+
+                  //根据返回结果判断验证码是否正确
+                  if(result.code===-1){
+                      alert('验证码错误');
+                  }
+              } else {
+                  console.log(xhr.responseText);
+                 // alert(xhr.responseText)
+                  if (xhr.responseText === "登陆成功"){
+                      localStorage.setItem("u",username);
+                      // // var customerId = 1;
+                      // // sessionStorage.customerId = customerId;
+                      open('http://localhost:4514/backIndex','_self');
+                      // return;
+                  }else {
+                      alert("用户名或密码错误");
+                  }
+              }
+          }
+         console.log(xhr.responseText);
+
+      }
+  }
+    </script>
+
+
+</body>
+</html>

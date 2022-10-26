@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>016汽车租赁系统</title>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+</head>
+<body>
+<center><h1>可用车列表:</h1>
+    <table id="dataTable1">
+        <tr>
+            <th>车牌号</th>
+            <th>车名</th>
+            <th>价格（￥/天）</th>
+            <th>剩余</th>
+        </tr>
+    </table>
+    <p></p>
+    请输入车牌号
+    <input type="text" id="Zcarid" size="20" maxlength="10"> <br>
+    请输入车名
+    <input type="text" id="carname" size="20" maxlength="10"> <br>
+    请输入价格
+    <input type="text" id="money" size="20" maxlength="10"> <br>
+    请输入剩余数
+    <input type="text" id="num" size="2" maxlength="10"> <br>
+    <button onclick="insert();">添加/修改</button>
+    (若车牌号存在即修改其他数据)
+
+    <p></p>
+    <p></p>
+    <p></p>
+    请输入车牌号
+    <input type="text" id="Dcarid" size="20" maxlength="10">
+    <button onclick="deleteCar();">删除</button>
+    <p></p>
+
+    <h1>借出明细</h1>
+    <table id="dataTable2">
+        <tr>
+            <th>用户</th>
+            <th>电话</th>
+            <th>出借时间</th>
+            <th>车牌</th>
+        </tr>
+    </table>   <a href="/index">首页</a></center>
+    </center>
+
+       <script>
+
+           insert = function (){
+               let car1 = document.getElementById("Zcarid").value;
+               let car2 = document.getElementById("carname").value;
+               let car3 = document.getElementById("money").value;
+               let car4 = document.getElementById("num").value;
+               let data = {
+                   "carId" : car1 ,
+                   "carName" : car2 ,
+                   "cost" : car3 ,
+                   "isLive" : car4
+               }
+               let xhr = new XMLHttpRequest();
+               xhr.open("POST", "/back" +
+                   "/insert", true);
+               xhr.setRequestHeader('content-type', 'application/json');
+               xhr.send(JSON.stringify(data));
+
+               //回调
+               xhr.onreadystatechange = function () {
+                   if (xhr.readyState == 4) {
+                       //根据服务器的响应内容格式处理响应结果
+                       if (xhr.getResponseHeader('content-type') === 'application/json') {
+                           var result = JSON.parse(xhr.responseText);
+
+                           //根据返回结果判断验证码是否正确
+                           if (result.code === -1) {
+                               alert('验证码错误');
+                           }
+                       } else {
+                           console.log(xhr.responseText);
+                           alert(xhr.responseText)
+                           open('http://localhost:4514/backIndex','_self');
+                           // if (xhr.responseText === "登陆成功"){
+                           //     localStorage.setItem("u",username);
+                           //     // // var customerId = 1;
+                           //     // // sessionStorage.customerId = customerId;
+                           //     open('http://localhost:4514/welcome','_self');
+                           //     // return;
+                           // }else {
+                           //     alert("用户名或密码错误");
+                           // }
+                       }
+                   }
+               }
+           }
+
+           deleteCar = function (){
+               let car = document.getElementById("Dcarid").value;
+               let data = {
+                   "carId": car
+               }
+               let xhr = new XMLHttpRequest();
+               xhr.open("POST", "/back" +
+                   "/deleteCar", true);
+               xhr.setRequestHeader('content-type', 'application/json');
+               xhr.send(JSON.stringify(data));
+
+               //回调
+               xhr.onreadystatechange = function () {
+                   if (xhr.readyState == 4) {
+                       //根据服务器的响应内容格式处理响应结果
+                       if (xhr.getResponseHeader('content-type') === 'application/json') {
+                           var result = JSON.parse(xhr.responseText);
+
+                           //根据返回结果判断验证码是否正确
+                           if (result.code === -1) {
+                               alert('验证码错误');
+                           }
+                       } else {
+                           console.log(xhr.responseText);
+                           alert(xhr.responseText)
+                           open('http://localhost:4514/backIndex','_self');
+                           // if (xhr.responseText === "登陆成功"){
+                           //     localStorage.setItem("u",username);
+                           //     // // var customerId = 1;
+                           //     // // sessionStorage.customerId = customerId;
+                           //     open('http://localhost:4514/welcome','_self');
+                           //     // return;
+                           // }else {
+                           //     alert("用户名或密码错误");
+                           // }
+                       }
+                   }
+               }
+           }
+
+
+           var t = localStorage.getItem("u");
+           if (t === null) {
+               alert("未登陆!")
+               window.location.href= "/back";
+           }
+           console.log(t);
+           //表示当整个文档被加载时就执行此函数，且只执行一次
+           $(function () {
+               $.ajax({
+                   url: "/car/all",
+                   method: "get",
+                   success: function (res) {
+                       //无需转换格式，因为传过来的就是json对象
+                       for (var i = 0; i < res.length; i++) {
+                           // var option = "<option value='" + res[i].carName + "'>" + res[i].cname + "</option>";
+                           // $("#cid").append(option);
+                           // console.log(option.carName);
+                           console.log(res[i]);
+                           console.log(res[i].carId);
+
+                       }
+
+                       var  table = document.getElementById("dataTable1");
+                       for (let i = 0; i < res.length; i++) {
+                           var tr = table.insertRow(table.rows.length);
+                           var obj = res[i];
+
+                           for (var p in obj){
+                               var td = tr.insertCell(tr.cells.length);
+                               td.innerText = obj[p];
+                               //console.log(1);
+                           }
+                           console.log(114514);
+                       }
+                       // var trStr = ''
+                       // res.forEach(function (item) {
+                       //     trStr = trStr + `<tr>
+                       //      <td>${item.carId}</td>
+                       //      <td>${item.carName}</td>
+                       //      <td>${item.cost}</td>
+                       //      <td>${item.isLive}</td>
+                       //  </tr>`
+                       //
+                       // })
+                       // var str = '<table>' + trStr + '</table>'
+                       // document.write(str)
+
+
+
+                   },
+                   error: function () {
+                       //alert("ajax请求错误")
+                   }
+               })
+           });
+
+           $(function () {
+               $.ajax({
+                   url: "/car/allIO",
+                   method: "get",
+                   success: function (res) {
+                       //无需转换格式，因为传过来的就是json对象
+                       for (var i = 0; i < res.length; i++) {
+                           // var option = "<option value='" + res[i].carName + "'>" + res[i].cname + "</option>";
+                           // $("#cid").append(option);
+                           // console.log(option.carName);
+                           console.log(res[i]);
+                           console.log(res[i].carId);
+
+                       }
+
+                       var  table = document.getElementById("dataTable2");
+                       for (let i = 0; i < res.length; i++) {
+                           var tr = table.insertRow(table.rows.length);
+                           var obj = res[i];
+
+                           for (var p in obj){
+                               var td = tr.insertCell(tr.cells.length);
+                               td.innerText = obj[p];
+                               //console.log(1);
+                           }
+                           console.log(114514);
+                       }
+                       // var trStr = ''
+                       // res.forEach(function (item) {
+                       //     trStr = trStr + `<tr>
+                       //      <td>${item.carId}</td>
+                       //      <td>${item.carName}</td>
+                       //      <td>${item.cost}</td>
+                       //      <td>${item.isLive}</td>
+                       //  </tr>`
+                       //
+                       // })
+                       // var str = '<table>' + trStr + '</table>'
+                       // document.write(str)
+
+
+
+                   },
+                   error: function () {
+                       //alert("ajax请求错误")
+                   }
+               })
+           });
+
+       </script>
+</body>
+</html>
